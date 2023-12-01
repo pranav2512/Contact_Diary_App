@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider:
   local_auth:
+  url_launcher:
+  image_picker:
 
 dev_dependencies:
   flutter_test:

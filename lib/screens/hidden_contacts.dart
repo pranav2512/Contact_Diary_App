@@ -1,4 +1,5 @@
 import 'package:contact_diary_app/providers/contact_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +26,10 @@ class HiddenContacts extends StatelessWidget {
               elevation: 5,
               child: ListTile(
                 dense: true,
-                leading: CircleAvatar(
-                  child: e.flutterLogo,
+                leading: (e.profileImage!=null)?CircleAvatar(
+                    backgroundImage: FileImage(e.profileImage!),
+                ):CircleAvatar(
+                  child: FlutterLogo(),
                 ),
                 title: Text(e.name),
                 subtitle: Text(e.phone),
@@ -34,7 +37,7 @@ class HiddenContacts extends StatelessWidget {
                   onPressed: () {
                     contactproviderfalse.unHideContact(e);
                   },
-                  icon: const Icon(Icons.hide_source,color: Colors.green),
+                  icon: Icon(Icons.lock_open,color: Colors.green,),
                 ),
               ),
             );

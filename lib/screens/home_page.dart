@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:contact_diary_app/providers/contact_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -17,15 +21,19 @@ class HomePage extends StatelessWidget {
         title: const Text("Contacts"),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () async{
-            LocalAuthentication localAuth=LocalAuthentication();
-            if(await localAuth.canCheckBiometrics&& await localAuth.isDeviceSupported())
-              {
-                localAuth.authenticate(localizedReason: "Unlock Hidden Contacts").then((value) {
-                  Navigator.pushNamed(context, "hidden_contacts");
-                });
-              }
-          }, icon: const Icon(Icons.hide_source)),
+          IconButton(
+              onPressed: () async {
+                LocalAuthentication localAuth = LocalAuthentication();
+                if (await localAuth.canCheckBiometrics &&
+                    await localAuth.isDeviceSupported()) {
+                  localAuth
+                      .authenticate(localizedReason: "Unlock Hidden Contacts")
+                      .then((value) {
+                    Navigator.pushNamed(context, "hidden_contacts");
+                  });
+                }
+              },
+              icon: const Icon(Icons.lock)),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -41,50 +49,62 @@ class HomePage extends StatelessWidget {
       body: Container(
         alignment: Alignment.topCenter,
         padding: const EdgeInsets.all(12),
-        child: ListView(
-          children: contactprovider.contacts.map((e) {
-            return Card(
-              elevation: 5,
-              child: ListTile(
-                dense: true,
-                onTap: () {
-                  Navigator.pushNamed(context, "contact_detail", arguments: e);
-                },
-                leading: CircleAvatar(
-                  child: e.flutterLogo,
-                ),
-                title: Text(e.name),
-                subtitle: Text(e.phone),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        contactproviderfalse.hideContact(e);
+        child: (contactprovider.contacts.isEmpty)
+            ? Center(
+                child: Text(
+                "No contacts,Press + to add new",
+                style: TextStyle(fontSize: 25),
+              ))
+            : ListView(
+                children: contactprovider.contacts.map((e) {
+                  return Card(
+                    elevation: 5,
+                    child: ListTile(
+                      dense: true,
+                      onTap: () {
+                        Navigator.pushNamed(context, "contact_detail",
+                            arguments: e);
                       },
-                      icon: const Icon(Icons.hide_source),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        contactproviderfalse.deleteContact(e);
-                      },
-                      icon: const Icon(Icons.delete),
-                      color: Colors.red,
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.call,
-                        color: Colors.green,
+                      leading: (e.profileImage!=null)?CircleAvatar(
+                        backgroundImage: FileImage(e.profileImage!),
+                      ):CircleAvatar(
+                        child: FlutterLogo(),
+                      ),
+                      title: Text(e.name),
+                      subtitle: Text(e.phone),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              contactproviderfalse.hideContact(e);
+                            },
+                            icon: const Icon(Icons.lock),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              contactproviderfalse.deleteContact(e);
+                            },
+                            icon: const Icon(Icons.delete),
+                            color: Colors.red,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              final Uri _url = Uri.parse("tel:${e.phone}");
+                              launchUrl(_url);
+                            },
+                            icon: const Icon(
+                              Icons.call,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList(),
-        ),
       ),
     );
   }
@@ -102,13 +122,13 @@ class _AlertBoxState extends State<AlertBox> {
   Widget build(BuildContext context) {
     var contactprovider = Provider.of<ContactProvider>(context);
     var contactproviderfalse =
-    Provider.of<ContactProvider>(context, listen: false);
+        Provider.of<ContactProvider>(context, listen: false);
 
     return AlertDialog(
       title: Text("Add Contact"),
       content: SizedBox(
-        height: 400,
-        width: 400,
+        height: 450,
+        width: 450,
         child: Stepper(
           currentStep: contactprovider.current_step,
           controlsBuilder: (context, details) {
@@ -163,23 +183,56 @@ class _AlertBoxState extends State<AlertBox> {
           },
           steps: [
             Step(
-                state: (contactprovider.current_step == 0)
-                    ? StepState.editing
-                    : StepState.complete,
-                title: Text("Contact Image"),
-                content: FlutterLogo()),
+              state: (contactprovider.current_step == 0)
+                  ? StepState.editing
+                  : StepState.complete,
+              title: Text("Contact Image"),
+              content: Column(
+                children: [
+                  (contactprovider.profileImageVar != null)
+                      ? CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.grey,
+                          backgroundImage:
+                              FileImage(contactprovider.profileImageVar!),
+                        )
+                      : CircleAvatar(
+                          radius: 40,
+                          child: FlutterLogo(),
+                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      FloatingActionButton(
+                        mini: true,
+                        onPressed: () {
+                          contactproviderfalse.ImagePickerCamera();
+                        },
+                        child: Icon(Icons.camera),
+                      ),
+                      FloatingActionButton(
+                        mini: true,
+                        onPressed: () {
+                          contactproviderfalse.ImagePickerGalary();
+                        },
+                        child: Icon(Icons.photo),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             Step(
               state: (contactprovider.current_step < 1)
                   ? StepState.indexed
                   : (contactprovider.current_step == 1)
-                  ? StepState.editing
-                  : (contactprovider
-                  .nameController.text.isEmpty)
-                  ? StepState.error
-                  : StepState.complete,
+                      ? StepState.editing
+                      : (contactprovider.nameController.text.isEmpty)
+                          ? StepState.error
+                          : StepState.complete,
               title: Text("Name"),
               content: TextField(
-                controller: contactprovider.nameController,
+                  controller: contactprovider.nameController,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Enter your Name')),
@@ -188,11 +241,10 @@ class _AlertBoxState extends State<AlertBox> {
               state: (contactprovider.current_step < 2)
                   ? StepState.indexed
                   : (contactprovider.current_step == 2)
-                  ? StepState.editing
-                  : (contactprovider
-                  .phoneController.text.isEmpty)
-                  ? StepState.error
-                  : StepState.complete,
+                      ? StepState.editing
+                      : (contactprovider.phoneController.text.isEmpty)
+                          ? StepState.error
+                          : StepState.complete,
               title: Text("Phone Number"),
               content: TextField(
                   controller: contactprovider.phoneController,
@@ -204,11 +256,10 @@ class _AlertBoxState extends State<AlertBox> {
               state: (contactprovider.current_step < 3)
                   ? StepState.indexed
                   : (contactprovider.current_step == 3)
-                  ? StepState.editing
-                  : (contactprovider
-                  .emailController.text.isEmpty)
-                  ? StepState.error
-                  : StepState.complete,
+                      ? StepState.editing
+                      : (contactprovider.emailController.text.isEmpty)
+                          ? StepState.error
+                          : StepState.complete,
               title: Text("Email"),
               content: TextField(
                   controller: contactprovider.emailController,
@@ -222,4 +273,3 @@ class _AlertBoxState extends State<AlertBox> {
     );
   }
 }
-
