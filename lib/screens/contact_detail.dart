@@ -79,15 +79,28 @@ class ContactDetail extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  (data.profileImage!=null)?CircleAvatar(
-                    radius: 100,
-                      backgroundImage: FileImage(data.profileImage!),
-                  ):CircleAvatar(
-                    radius: 100,
-                child: FlutterLogo(size: 100),
-              ),
-                  FloatingActionButton(
-                      mini: true, onPressed: () {}, child: Icon(Icons.add))
+                  (data.profileImage != null)
+                      ? CircleAvatar(
+                          radius: 100,
+                          backgroundImage: FileImage(data.profileImage!),
+                        )
+                      : CircleAvatar(
+                          radius: 100,
+                          child: FlutterLogo(size: 100),
+                        ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FloatingActionButton(
+                          mini: true, onPressed: () {
+                            contactproviderfalse.ImageUpdateCamera(data);
+                      }, child: Icon(Icons.camera)),
+                    FloatingActionButton(
+                          mini: true, onPressed: () {
+                            contactproviderfalse.ImageUpdateGalary(data);
+                    }, child: Icon(Icons.image)),
+                    ],
+                  ),
                 ],
               ),
             ),

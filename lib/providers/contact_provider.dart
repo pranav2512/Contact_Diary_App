@@ -6,21 +6,22 @@ import 'package:image_picker/image_picker.dart';
 
 class ContactProvider extends ChangeNotifier {
   List<Contact> contacts = [
-    // Contact(
-    //     name: "Pranav",
-    //     phone: "8866161894",
-    //     email: "pranav@gmail.com",
-    //     profileImage: profileImageVar),
-    // Contact(
-    //     name: "Manav",
-    //     phone: "9988774455",
-    //     email: "manav@gmail.com",
-    //     profileImage: profileImageVar),
+    Contact(
+      name: "Pranav",
+      phone: "8866161894",
+      email: "pranav@gmail.com",
+    ),
+    Contact(
+      name: "Manav",
+      phone: "9988774455",
+      email: "manav@gmail.com",
+    ),
   ];
 
   File? profileImageVar;
+  File? profileImageUpdate;
 
-  void ImagePickerCamera() async{
+  void ImagePickerCamera() async {
     ImagePicker picker = ImagePicker();
 
     XFile? xFile = await picker.pickImage(source: ImageSource.camera);
@@ -28,7 +29,8 @@ class ContactProvider extends ChangeNotifier {
     profileImageVar = File(path);
     notifyListeners();
   }
-  void ImagePickerGalary() async{
+
+  void ImagePickerGalary() async {
     ImagePicker picker = ImagePicker();
 
     XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
@@ -59,35 +61,36 @@ class ContactProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addContact(
-      String name, String phone, String email) {
-    contacts.add(Contact(
-        name: name, phone: phone, email: email));
-    notifyListeners();
-  }void addContactWithImage(
-      String name, String phone, String email,File profileImgae) {
-    contacts.add(Contact(
-        name: name, phone: phone, email: email,profileImage: profileImgae));
+  void addContact(String name, String phone, String email) {
+    contacts.add(Contact(name: name, phone: phone, email: email));
     notifyListeners();
   }
 
+  void addContactWithImage(
+      String name, String phone, String email, File profileImgae) {
+    contacts.add(Contact(
+        name: name, phone: phone, email: email, profileImage: profileImgae));
+    notifyListeners();
+  }
 
   void checkFilledData() {
     if (nameController.text.isNotEmpty &&
         phoneController.text.isNotEmpty &&
-        emailController.text.isNotEmpty && profileImageVar!=null) {
-      addContactWithImage(nameController.text, phoneController.text, emailController.text,profileImageVar!);
-
-    }
-    else if(nameController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        profileImageVar != null) {
+      addContactWithImage(nameController.text, phoneController.text,
+          emailController.text, profileImageVar!);
+    } else if (nameController.text.isNotEmpty &&
         phoneController.text.isNotEmpty &&
-        emailController.text.isNotEmpty && profileImageVar==null){
-      addContact(nameController.text, phoneController.text, emailController.text);
+        emailController.text.isNotEmpty &&
+        profileImageVar == null) {
+      addContact(
+          nameController.text, phoneController.text, emailController.text);
     }
     nameController.clear();
     emailController.clear();
     phoneController.clear();
-    profileImageVar=null;
+    profileImageVar = null;
     notifyListeners();
   }
 
@@ -127,6 +130,34 @@ class ContactProvider extends ChangeNotifier {
     nameEditingController.clear();
     phoneEditingController.clear();
     emailEditingController.clear();
+    notifyListeners();
+  }
+
+  void ImageUpdateCamera(Contact data) async {
+    ImagePicker picker = ImagePicker();
+
+    XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+    String? path = xFile!.path;
+    profileImageUpdate = File(path);
+    contacts.forEach((element) {
+      if (element == data) {
+        element.profileImage = profileImageUpdate;
+      }
+    });
+    notifyListeners();
+  }
+
+  void ImageUpdateGalary(Contact data) async {
+    ImagePicker picker = ImagePicker();
+
+    XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
+    String? path = xFile!.path;
+    profileImageUpdate = File(path);
+    contacts.forEach((element) {
+      if (element == data) {
+        element.profileImage = profileImageUpdate;
+      }
+    });
     notifyListeners();
   }
 }

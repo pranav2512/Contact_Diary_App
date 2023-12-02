@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
                 child: Text(
                 "No contacts,Press + to add new",
                 style: TextStyle(fontSize: 25),
-              ))
+              ),)
             : ListView(
                 children: contactprovider.contacts.map((e) {
                   return Card(

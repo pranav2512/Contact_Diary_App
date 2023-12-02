@@ -20,7 +20,11 @@ class HiddenContacts extends StatelessWidget {
       body: Container(
         alignment: Alignment.topCenter,
         padding: const EdgeInsets.all(12),
-        child: ListView(
+        child: (contactprovider.hiddenContacts.isEmpty)?Center(
+          child: Text(
+            "No hidden contacts",
+            style: TextStyle(fontSize: 25),
+          ),):ListView(
           children: contactprovider.hiddenContacts.map((e) {
             return Card(
               elevation: 5,
