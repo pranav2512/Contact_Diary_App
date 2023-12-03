@@ -1,6 +1,9 @@
 # contact_diary_app
+
 video
 https://github.com/pranav2512/Contact_Diary_App/assets/83396279/18d36b0c-eb5e-4f96-a329-af1b40f49b46
+
+
 photos
 ![add_contact](https://github.com/pranav2512/Contact_Diary_App/assets/83396279/78491459-c76c-4d5b-9090-faa9fecd22e1)
 ![update_contact](https://github.com/pranav2512/Contact_Diary_App/assets/83396279/8b0db4b0-bf7c-4fcf-8e17-2988b9257b15)
