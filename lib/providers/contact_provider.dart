@@ -133,7 +133,7 @@ class ContactProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void ImageUpdateCamera(Contact data) async {
+  Future<void> ImageUpdateCamera(Contact data) async {
     ImagePicker picker = ImagePicker();
 
     XFile? xFile = await picker.pickImage(source: ImageSource.camera);
@@ -147,7 +147,7 @@ class ContactProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void ImageUpdateGalary(Contact data) async {
+  Future<void> ImageUpdateGalary(Contact data) async {
     ImagePicker picker = ImagePicker();
 
     XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
